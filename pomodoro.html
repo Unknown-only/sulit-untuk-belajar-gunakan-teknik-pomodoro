@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pomodoro Solusi - Belajar Lebih Efektif</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #4cc9f0;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4bb543;
+            --warning: #ff9505;
+            --danger: #ff5252;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --pomodoro-red: #e84855;
+            --pomodoro-green: #2a9d8f;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7ff 0%, #e8edff 100%);
+            color: var(--dark);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .logo i {
+            color: var(--pomodoro-red);
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 25px;
+        }
+        
+        nav a {
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            position: relative;
+        }
+        
+        nav a:hover {
+            color: var(--primary);
+        }
+        
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: var(--primary);
+            transition: width 0.3s;
+        }
+        
+        nav a:hover::after {
+            width: 100%;
+        }
+        
+        .hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .hero h1 {
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            color: var(--secondary);
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 30px;
+            color: var(--gray);
+        }
+        
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 14px rgba(67, 97, 238, 0.4);
+        }
+        
+        .btn-primary:hover {
+            background: var(--secondary);
+            transform: translateY(-3px);
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+        
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .pomodoro-container {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .pomodoro-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--pomodoro-red) 0%, var(--primary) 100%);
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .timer-display {
+            font-size: 4.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin: 25px 0;
+            color: var(--primary);
+            font-family: 'Courier New', monospace;
+            text-shadow: 0 2px 10px rgba(67, 97, 238, 0.2);
+        }
+        
+        .timer-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .timer-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .timer-btn.start {
+            background: var(--success);
+            color: white;
+        }
+        
+        .timer-btn.pause {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .timer-btn.reset {
+            background: var(--light-gray);
+            color: var(--dark);
+        }
+        
+        .timer-modes {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .mode-btn {
+            padding: 10px 20px;
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            background: transparent;
+            color: var(--gray);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .mode-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--light-gray);
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .features {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+        
+        .feature-list {
+            list-style: none;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+        
+        .feature-item:hover {
+            background: var(--light);
+        }
+        
+        .feature-icon {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-top: 5px;
+        }
+        
+        .feature-content h3 {
+            margin-bottom: 8px;
+            color: var(--secondary);
+        }
+        
+        .feature-content p {
+            color: var(--gray);
+        }
+        
+        .tasks {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            margin-bottom: 50px;
+        }
+        
+        .task-form {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .task-input {
+            flex: 1;
+            padding: 14px;
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .task-list {
+            list-style: none;
+        }
+        
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .task-item:last-child {
+            border-bottom: none;
+        }
+        
+        .task-checkbox {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+        }
+        
+        .task-text {
+            flex: 1;
+        }
+        
+        .task-item.completed .task-text {
+            text-decoration: line-through;
+            color: var(--gray);
+        }
+        
+        .task-delete {
+            color: var(--danger);
+            cursor: pointer;
+            padding: 5px;
+        }
+        
+        .motivation {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 16px;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .motivation h2 {
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+        
+        .motivation p {
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            color: var(--gray);
+            border-top: 1px solid var(--light-gray);
+            margin-top: 40px;
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            nav ul {
+                gap: 15px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .timer-display {
+                font-size: 3.5rem;
+            }
+            
+            .timer-controls {
+                flex-direction: column;
+            }
+            
+            .task-form {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-stopwatch"></i>
+                <span>Pomodoro Solusi</span>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#">Beranda</a></li>
+                    <li><a href="#">Teknik Pomodoro</a></li>
+                    <li><a href="#">Tips Belajar</a></li>
+                    <li><a href="#">Tentang</a></li>
+                </ul>
+            </nav>
+        </header>
+        
+        <section class="hero">
+            <h1>Solusi Untuk Masalah Sulit Belajar</h1>
+            <p>Teknik Pomodoro membantu Anda belajar lebih fokus dan efektif di rumah. Kelola waktu dan tugas dengan mudah.</p>
+            <button class="btn btn-primary">
+                <i class="fas fa-play"></i> Mulai Belajar
+            </button>
+        </section>
+        
+        <div class="main-content">
+            <section class="pomodoro-container">
+                <h2 class="section-title">
+                    <i class="fas fa-clock"></i> Timer Pomodoro
+                </h2>
+                
+                <div class="timer-modes">
+                    <button class="mode-btn active" data-mode="pomodoro">Pomodoro</button>
+                    <button class="mode-btn" data-mode="short-break">Istirahat Pendek</button>
+                    <button class="mode-btn" data-mode="long-break">Istirahat Panjang</button>
+                </div>
+                
+                <div class="timer-display" id="timer">25:00</div>
+                
+                <div class="timer-controls">
+                    <button class="timer-btn start" id="startBtn">
+                        <i class="fas fa-play"></i> Mulai
+                    </button>
+                    <button class="timer-btn pause" id="pauseBtn">
+                        <i class="fas fa-pause"></i> Jeda
+                    </button>
+                    <button class="timer-btn reset" id="resetBtn">
+                        <i class="fas fa-redo"></i> Atur Ulang
+                    </button>
+                </div>
+                
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="pomodoroCount">0</div>
+                        <div class="stat-label">Pomodoro</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="cyclesCount">0</div>
+                        <div class="stat-label">Siklus</div>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="features">
+                <h2 class="section-title">
+                    <i class="fas fa-star"></i> Manfaat Pomodoro
+                </h2>
+                
+                <ul class="feature-list">
+                    <li class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h3>Tingkatkan Fokus</h3>
+                            <p>Belajar dengan interval waktu yang teratur membantu menjaga konsentrasi.</p>
+                        </div>
+                    </li>
+                    <li class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h3>Kelola Waktu</h3>
+                            <p>Membagi sesi belajar menjadi bagian-bagian yang mudah dikelola.</p>
+                        </div>
+                    </li>
+                    <li class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-fire"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h3>Lawan Prokrastinasi</h3>
+                            <p>Memulai menjadi lebih mudah ketika Anda hanya berkomitmen untuk 25 menit.</p>
+                        </div>
+                    </li>
+                    <li class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h3>Tingkatkan Produktivitas</h3>
+                            <p>Istirahat teratur membantu menjaga energi dan fokus sepanjang hari.</p>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+        </div>
+        
+        <section class="tasks">
+            <h2 class="section-title">
+                <i class="fas fa-list-check"></i> Daftar Tugas Belajar
+            </h2>
+            
+            <form class="task-form" id="taskForm">
+                <input type="text" class="task-input" id="taskInput" placeholder="Tambahkan tugas belajar...">
+                <button type="submit" class="btn btn-primary">Tambah</button>
+            </form>
+            
+            <ul class="task-list" id="taskList">
+                <li class="task-item">
+                    <input type="checkbox" class="task-checkbox">
+                    <span class="task-text">Mempelajari materi matematika</span>
+                    <i class="fas fa-trash task-delete"></i>
+                </li>
+                <li class="task-item">
+                    <input type="checkbox" class="task-checkbox">
+                    <span class="task-text">Mengerjakan latihan fisika</span>
+                    <i class="fas fa-trash task-delete"></i>
+                </li>
+                <li class="task-item completed">
+                    <input type="checkbox" class="task-checkbox" checked>
+                    <span class="task-text">Membaca buku sejarah</span>
+                    <i class="fas fa-trash task-delete"></i>
+                </li>
+            </ul>
+        </section>
+        
+        <section class="motivation">
+            <h2>Kutipan Motivasi</h2>
+            <p>"Pendidikan adalah senjata paling mematikan di dunia, karena dengan pendidikan, Anda dapat mengubah dunia." - Nelson Mandela</p>
+        </section>
+        
+        <footer>
+            <p>© 2023 Pomodoro Solusi - Dibuat dengan ❤️ untuk pembelajar di rumah</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const timerDisplay = document.getElementById('timer');
+            const startBtn = document.getElementById('startBtn');
+            const pauseBtn = document.getElementById('pauseBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const modeButtons = document.querySelectorAll('.mode-btn');
+            const pomodoroCountEl = document.getElementById('pomodoroCount');
+            const cyclesCountEl = document.getElementById('cyclesCount');
+            const taskForm = document.getElementById('taskForm');
+            const taskInput = document.getElementById('taskInput');
+            const taskList = document.getElementById('taskList');
+            
+            let minutes = 25;
+            let seconds = 0;
+            let timer;
+            let isRunning = false;
+            let currentMode = 'pomodoro';
+            let pomodoroCount = 0;
+            let cyclesCount = 0;
+            
+            // Update timer display
+            function updateDisplay() {
+                timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                // Change color based on mode
+                if (currentMode === 'pomodoro') {
+                    timerDisplay.style.color = 'var(--pomodoro-red)';
+                } else {
+                    timerDisplay.style.color = 'var(--pomodoro-green)';
+                }
+            }
+            
+            // Switch between modes
+            modeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    modeButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    currentMode = this.dataset.mode;
+                    
+                    // Reset timer based on mode
+                    switch(currentMode) {
+                        case 'pomodoro':
+                            minutes = 25;
+                            break;
+                        case 'short-break':
+                            minutes = 5;
+                            break;
+                        case 'long-break':
+                            minutes = 15;
+                            break;
+                    }
+                    seconds = 0;
+                    updateDisplay();
+                });
+            });
+            
+            // Start timer
+            startBtn.addEventListener('click', function() {
+                if (!isRunning) {
+                    isRunning = true;
+                    timer = setInterval(function() {
+                        if (seconds === 0) {
+                            if (minutes === 0) {
+                                clearInterval(timer);
+                                isRunning = false;
+                                
+                                // Play sound notification
+                                const audio = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3');
+                                audio.play();
+                                
+                                // Handle timer completion
+                                if (currentMode === 'pomodoro') {
+                                    pomodoroCount++;
+                                    pomodoroCountEl.textContent = pomodoroCount;
+                                    
+                                    if (pomodoroCount % 4 === 0) {
+                                        cyclesCount++;
+                                        cyclesCountEl.textContent = cyclesCount;
+                                        // Auto switch to long break after 4 pomodoros
+                                        document.querySelector('[data-mode="long-break"]').click();
+                                        alert("Selamat! Anda telah menyelesaikan satu siklus Pomodoro. Saatnya istirahat panjang.");
+                                    } else {
+                                        // Auto switch to short break
+                                        document.querySelector('[data-mode="short-break"]').click();
+                                        alert("Pomodoro selesai! Saatnya istirahat sebentar.");
+                                    }
+                                } else {
+                                    // Auto switch back to pomodoro after break
+                                    document.querySelector('[data-mode="pomodoro"]').click();
+                                    alert("Istirahat selesai! Saatnya fokus belajar lagi.");
+                                }
+                                
+                                // Start the next timer automatically
+                                startBtn.click();
+                            } else {
+                                minutes--;
+                                seconds = 59;
+                            }
+                        } else {
+                            seconds--;
+                        }
+                        updateDisplay();
+                    }, 1000);
+                }
+            });
+            
+            // Pause timer
+            pauseBtn.addEventListener('click', function() {
+                clearInterval(timer);
+                isRunning = false;
+            });
+            
+            // Reset timer
+            resetBtn.addEventListener('click', function() {
+                clearInterval(timer);
+                isRunning = false;
+                
+                switch(currentMode) {
+                    case 'pomodoro':
+                        minutes = 25;
+                        break;
+                    case 'short-break':
+                        minutes = 5;
+                        break;
+                    case 'long-break':
+                        minutes = 15;
+                        break;
+                }
+                seconds = 0;
+                updateDisplay();
+            });
+            
+            // Task functionality
+            taskForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const taskText = taskInput.value.trim();
+                if (taskText) {
+                    addTask(taskText);
+                    taskInput.value = '';
+                    taskInput.focus();
+                }
+            });
+            
+            function addTask(text) {
+                const li = document.createElement('li');
+                li.className = 'task-item';
+                
+                li.innerHTML = `
+                    <input type="checkbox" class="task-checkbox">
+                    <span class="task-text">${text}</span>
+                    <i class="fas fa-trash task-delete"></i>
+                `;
+                
+                // Add event for checkbox
+                const checkbox = li.querySelector('.task-checkbox');
+                checkbox.addEventListener('change', function() {
+                    li.classList.toggle('completed', this.checked);
+                });
+                
+                // Add event for delete button
+                const deleteBtn = li.querySelector('.task-delete');
+                deleteBtn.addEventListener('click', function() {
+                    li.remove();
+                });
+                
+                taskList.appendChild(li);
+            }
+            
+            // Initialize existing tasks functionality
+            document.querySelectorAll('.task-item').forEach(item => {
+                const checkbox = item.querySelector('.task-checkbox');
+                const deleteBtn = item.querySelector('.task-delete');
+                
+                checkbox.addEventListener('change', function() {
+                    item.classList.toggle('completed', this.checked);
+                });
+                
+                deleteBtn.addEventListener('click', function() {
+                    item.remove();
+                });
+            });
+            
+            // Initialize display
+            updateDisplay();
+        });
+    </script>
+</body>
+</html>
